@@ -30,52 +30,8 @@ class Colors:
 
 async def process_agent_response(event):
     """Process and display agent response events."""
-    # Debug: Print all parts to understand what's happening
-    if event.content and event.content.parts:
-        for i, part in enumerate(event.content.parts):
-            part_type = type(part).__name__
-            print(f"  Debug: Part {i}: {part_type}")
 
-            if hasattr(part, "function_call") and part.function_call:
-                print(f"    Function call: {part.function_call.name}")
-                has_specific_part = True
-            elif hasattr(part, "executable_code") and part.executable_code:
-                print(f"    Executable code: {part.executable_code.code}")
-                has_specific_part = True
-            elif hasattr(part, "code_execution_result") and part.code_execution_result:
-                print(f"    Code execution result: {part.code_execution_result.outcome}")
-                has_specific_part = True
-            elif hasattr(part, "tool_response") and part.tool_response:
-                print(f"    Tool response: {part.tool_response.output}")
-                has_specific_part = True
-            elif hasattr(part, "text") and part.text:
-                print(f"    Text: {part.text[:100]}...")
-            else:
-                print(
-                    f"    Unknown part type with attributes: {[attr for attr in dir(part) if not attr.startswith('_')]}")
-
-    # Check for specific parts first
-    has_specific_part = False
-    if event.content and event.content.parts:
-        for part in event.content.parts:
-            if hasattr(part, "executable_code") and part.executable_code:
-                # Access the actual code string via .code
-                print(
-                    f"  Debug: Agent generated code:\n```python\n{part.executable_code.code}\n```"
-                )
-                has_specific_part = True
-            elif hasattr(part, "code_execution_result") and part.code_execution_result:
-                # Access outcome and output correctly
-                print(
-                    f"  Debug: Code Execution Result: {part.code_execution_result.outcome} - Output:\n{part.code_execution_result.output}"
-                )
-                has_specific_part = True
-            elif hasattr(part, "tool_response") and part.tool_response:
-                # Print tool response information (optional debug info)
-                print(f"  Tool Response: {part.tool_response.output}")
-                has_specific_part = True
-
-    # Check for final response after specific parts
+    # Check for final response
     final_response = None
     if event.is_final_response():
         if (
